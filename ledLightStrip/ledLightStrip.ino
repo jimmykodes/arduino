@@ -1,6 +1,6 @@
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_Neopixel.h>
 #ifdef __AVR__
-  #include <avr/power.h>
+    #include <avr/power.h>
 #endif
 
 #define CLK 2
@@ -13,10 +13,10 @@
 Adafruit_NeoPixel strip(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 enum Mode: int {
-  HUE = 0,
-  SAT = 1,
-  VAL = 2,
-  ANIM = 3
+    HUE = 0,
+    SAT = 1,
+    VAL = 2,
+    ANIM = 3
 };
 
 int mode = HUE;
@@ -29,119 +29,117 @@ int val = 255;
 int animNum;
 
 void setup() {
-  Serial.begin(9600);
+    Serial.begin(9600);
 
-  strip.begin();
-  strip.setBrightness(64);
-  strip.show();
+    strip.begin();
+    strip.setBrightness(64);
+    strip.show();
 
-  pinMode(CLK, INPUT_PULLUP);
-  pinMode(DT, INPUT_PULLUP);
-  pinMode(ENC_BTN, INPUT);
+    pinMode(CLK, INPUT_PULLUP);
+    pinMode(DT, INPUT_PULLUP);
+    pinMode(ENC_BTN, INPUT);
 
-  lastStateCLK = digitalRead(CLK);
+    lastStateCLK = digitalRead(CLK);
 }
 
 void loop() {
-  strip.clear();
-  processBtn();
-  processEnc();
-  if (mode == ANIM) {
+    strip.clear();
+    processBtn();
+    processEnc();
     playAnim();
-  }
-  for(int i=0; i<NUM_PIXELS; i++) {
-    strip.setPixelColor(i, strip.ColorHSV(hue, sat, val));
-  }
-  strip.show();
+    for(int i=0; i<NUM_PIXELS; i++) {
+        strip.setPixelColor(i, strip.ColorHSV(hue, sat, val));
+    }
+    strip.show();
 }
 
 void processBtn() {
-  int btn = digitalRead(ENC_BTN);
-  if (btn == LOW && btnState != LOW) {
-    // encoder button normally closed
-    mode = (mode + 1) % 4;
-  }
-  btnState = btn;
+    int btn = digitalRead(ENC_BTN);
+    if (btn == LOW && btnState != LOW) {
+        // encoder button normally closed
+        mode = (mode + 1) % 4;
+    }
+    btnState = btn;
 }
 
 void processEnc() {
-  currentStateCLK = digitalRead(CLK);
-  if (currentStateCLK != lastStateCLK  && currentStateCLK == HIGH){
-    updateSettings(digitalRead(DT) == currentStateCLK);
-  }
-  lastStateCLK = currentStateCLK;
+    currentStateCLK = digitalRead(CLK);
+    if (currentStateCLK != lastStateCLK  && currentStateCLK == HIGH){
+        updateSettings(digitalRead(DT) == currentStateCLK);
+    }
+    lastStateCLK = currentStateCLK;
 }
 
 void updateSettings(bool cw) {
-  switch (mode) {
-    case HUE:
-    updateHue(cw);
-    break;
-    case SAT:
-    updateSat(cw);
-    break;
-    case VAL:
-    updateVal(cw);
-    break;
-    case ANIM:
-    updateAnim(cw);
-    break;
-  }
+    switch (mode) {
+        case HUE:
+            updateHue(cw);
+            break;
+        case SAT:
+            updateSat(cw);
+            break;
+        case VAL:
+            updateVal(cw);
+            break;
+        case ANIM:
+            updateAnim(cw);
+            break;
+    }
 }
 
 void updateHue(bool cw) {
-  if (cw) {
-    if (hue == 65535) {
-      hue = 0;
+    if (cw) {
+        if (hue == 65535) {
+            hue = 0;
+        }
+        hue += 65535 / 200;
+    } else {
+        if (hue == 0) {
+            hue = 65535;
+        }
+        hue -= 65535 / 200;
     }
-    hue += 65535 / 200;
-  } else {
-    if (hue == 0) {
-      hue = 65535;
-    }
-    hue -= 65535 / 200;
-  }
-  Serial.print("updated hue");
-  Serial.println(hue);
+    Serial.print("updated hue");
+    Serial.println(hue);
 }
 
 void updateSat(bool cw) {
-  if (cw) {
-    if (sat < 255) {
-      sat += 5;
+    if (cw) {
+        if (sat < 255) {
+            sat += 5;
+        }
+    } else {
+        if (sat > 0) {
+            sat -= 5;
+        }
     }
-  } else {
-    if (sat > 0) {
-      sat -= 5;
-    }
-  }
-  Serial.print("updated sat");
-  Serial.println(sat);
+    Serial.print("updated sat");
+    Serial.println(sat);
 }
 
 void updateVal(bool cw) {
-  if (cw) {
-    if (val < 255) {
-      val += 5;
+    if (cw) {
+        if (val < 255) {
+            val += 5;
+        }
+    } else {
+        if (val> 0) {
+            val -= 5;
+        }
     }
-  } else {
-    if (val> 0) {
-      val -= 5;
-    }
-  }
-  Serial.print("updated val");
-  Serial.println(val);
+    Serial.print("updated val");
+    Serial.println(val);
 }
 
 void updateAnim(bool cw) {
-  if (cw) {
-    animNum++;
-  } else {
-    animNum--;
-  }
+    if (cw) {
+        animNum++;
+    } else {
+        animNum--;
+    }
 }
 
 void playAnim() {
-  Serial.println("playing anim");
+    Serial.println("playing anim");
 }
 
