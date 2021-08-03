@@ -8,7 +8,7 @@
 #define ENC_BTN 4
 
 #define LED_PIN 5
-#define NUM_PIXELS 1
+#define NUM_PIXELS 50
 
 Adafruit_NeoPixel strip(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -51,8 +51,8 @@ void loop() {
   }
   for(int i=0; i<NUM_PIXELS; i++) {
     strip.setPixelColor(i, strip.ColorHSV(hue, sat, val));
-    strip.show();
   }
+  strip.show();
 }
 
 void processBtn() {
