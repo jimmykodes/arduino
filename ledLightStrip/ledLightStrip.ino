@@ -1,4 +1,4 @@
-#include <Adafruit_Neopixel.h>
+#include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
     #include <avr/power.h>
 #endif
@@ -46,10 +46,7 @@ void loop() {
     strip.clear();
     processBtn();
     processEnc();
-    playAnim();
-    for(int i=0; i<NUM_PIXELS; i++) {
-        strip.setPixelColor(i, strip.ColorHSV(hue, sat, val));
-    }
+    playAnimFrame();
     strip.show();
 }
 
@@ -139,7 +136,14 @@ void updateAnim(bool cw) {
     }
 }
 
-void playAnim() {
-    Serial.println("playing anim");
+void playAnimFrame() {
+    solid();
 }
+
+void solid() {
+    for(int i=0; i<NUM_PIXELS; i++) {
+        strip.setPixelColor(i, strip.ColorHSV(hue, sat, val));
+    }
+}
+
 
